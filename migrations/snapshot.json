@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "tables": {
+    "notes": {
+      "columns": {
+        "id": {
+          "type": "id",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uid": {
+          "type": "varchar",
+          "length": 36,
+          "notNull": true,
+          "unique": true
+        },
+        "scope": {
+          "type": "varchar",
+          "length": 10,
+          "notNull": true
+        },
+        "hostId": {
+          "type": "integer"
+        },
+        "folder": {
+          "type": "varchar",
+          "length": 255
+        },
+        "userId": {
+          "type": "refUser",
+          "length": 255,
+          "notNull": true
+        },
+        "title": {
+          "type": "varchar",
+          "length": 200,
+          "notNull": true,
+          "defaultValue": ""
+        },
+        "body": {
+          "type": "text",
+          "notNull": true
+        },
+        "tags": {
+          "type": "text"
+        },
+        "pinned": {
+          "type": "boolean",
+          "notNull": true,
+          "defaultValue": false
+        },
+        "createdAt": {
+          "type": "timestamp",
+          "notNull": true,
+          "defaultNow": true
+        },
+        "updatedAt": {
+          "type": "timestamp",
+          "notNull": true,
+          "defaultNow": true
+        }
+      },
+      "indexes": [
+        {
+          "name": "idx_p_notes_notes_host_id",
+          "columns": [
+            "hostId"
+          ]
+        },
+        {
+          "name": "idx_p_notes_notes_user_id",
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "idx_p_notes_notes_folder",
+          "columns": [
+            "folder"
+          ]
+        }
+      ]
+    }
+  }
+}
