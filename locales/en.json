@@ -138,6 +138,16 @@
     "note": "Note",
     "title": "Title",
     "body": "Text",
-    "text": "Text to add"
+    "text": "Text to add",
+    "notes": {
+      "title": "Notes",
+      "tags": "Tags",
+      "pinned": "Pinned"
+    }
+  },
+  "card": {
+    "title": "Pinned notes",
+    "loading": "Loading...",
+    "empty": "No pinned notes. Pin a private note to see it here."
   }
 }

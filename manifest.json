@@ -215,8 +215,36 @@
           "scope": "host",
           "kind": "count"
         }
+      ],
+      "resources": [
+        {
+          "id": "notes.note",
+          "titleKey": "operations.notes.title",
+          "icon": "NotebookPen",
+          "list": "notes.list",
+          "key": "id",
+          "name": "name",
+          "tab": "notes",
+          "columns": [
+            {
+              "key": "tags",
+              "titleKey": "operations.notes.tags"
+            },
+            {
+              "key": "pinned",
+              "titleKey": "operations.notes.pinned"
+            }
+          ]
+        }
       ]
-    }
+    },
+    "dashboardCards": [
+      {
+        "id": "notes-pinned",
+        "titleKey": "card.title",
+        "icon": "NotebookPen"
+      }
+    ]
   },
   "locales": "locales",
   "platforms": ["linux", "win32", "darwin"]

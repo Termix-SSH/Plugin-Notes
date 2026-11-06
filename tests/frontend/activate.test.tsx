@@ -152,3 +152,25 @@ describe(`${manifest.id} activate`, () => {
     );
   });
 });
+
+describe("pinned card", () => {
+  it("shows pinned global notes", async () => {
+    rendered = await renderWithApp(plugin, {
+      manifest,
+      locales,
+      permissions: ["notes.use"],
+      api: {
+        get: vi.fn(async () => ({
+          data: [
+            { uid: "a", title: "Wifi codes", excerpt: "abc", pinned: true },
+            { uid: "b", title: "Scratch", excerpt: "x", pinned: false },
+          ],
+        })),
+      } as never,
+    });
+    expect(rendered.registered.dashboardCards()).toEqual(["notes-pinned"]);
+    rendered.renderDashboardCard("notes-pinned");
+    expect(await screen.findByText("Wifi codes")).toBeTruthy();
+    expect(screen.queryByText("Scratch")).toBeNull();
+  });
+});

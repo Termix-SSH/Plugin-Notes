@@ -2,6 +2,7 @@ import { NotebookPen } from "lucide-react";
 import type { TermixApp } from "@termix-ssh/plugin-sdk/frontend";
 import { initApi } from "./api";
 import { NotesTab } from "./NotesTab";
+import { PinnedCard } from "./PinnedCard";
 import { NotesCompanion, useNotesCompanionDefaults } from "./NotesCompanion";
 
 const TAB_ID = "notes";
@@ -44,6 +45,14 @@ export function activate(app: TermixApp): void {
     order: 48,
     tabType: TAB_ID,
     when: (host) => canUse && notesEnabled(host),
+  });
+  app.registerDashboardCard({
+    id: "notes-pinned",
+    titleKey: "card.title",
+    defaultPanel: "side",
+    defaultHeight: 220,
+    frame: "framed",
+    component: PinnedCard,
   });
   app.registerPaletteEntry({
     id: "notes.open",
