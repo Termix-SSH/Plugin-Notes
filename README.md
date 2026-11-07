@@ -26,6 +26,7 @@ Read the [docs](https://docs.termix.site/plugins/notes) to set it up and use it.
 - Pin notes, add tags and search every note you can open
 - A notes panel beside any SSH terminal
 - Anyone with access to a host can read its notes, edit access is needed to change them
+- Actions to list, read, create and add to notes for the assistant and automations
 
 <br />
 
