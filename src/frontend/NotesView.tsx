@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileText, Folder, Globe, Pin, Server } from "lucide-react";
 import { useTranslation } from "@termix-ssh/plugin-sdk/frontend";
 import {
@@ -10,6 +10,7 @@ import {
   PanelList,
   PanelSearch,
   Segmented,
+  ToolbarBand,
   useConfirm,
 } from "@termix-ssh/plugin-sdk/ui";
 import { toast } from "sonner";
@@ -61,8 +62,11 @@ export function NotesView({
   const [failed, setFailed] = useState(false);
   const [openUid, setOpenUid] = useState<string | null>(null);
   const [note, setNote] = useState<Note | null>(null);
+  const loadSeq = useRef(0);
 
   const load = useCallback(async () => {
+    // A slow answer for an older view or query must not replace a newer one.
+    const seq = ++loadSeq.current;
     try {
       const q = query.trim();
       const list =
@@ -74,9 +78,11 @@ export function NotesView({
               folder: view === "folder" ? folder : undefined,
               q: q || undefined,
             });
+      if (seq !== loadSeq.current) return;
       setItems(list);
       setFailed(false);
     } catch {
+      if (seq !== loadSeq.current) return;
       setFailed(true);
       setItems((current) => current ?? []);
     }
@@ -131,10 +137,10 @@ export function NotesView({
     }
   };
 
+  // Takes the editor's own uid: a closing editor flushes after openUid moved on.
   const save = useCallback(
-    async (patch: Patch) => {
-      if (!openUid) return;
-      const updated = await updateNote(openUid, patch);
+    async (uid: string, patch: Patch) => {
+      const updated = await updateNote(uid, patch);
       setNote((current) =>
         current && current.uid === updated.uid
           ? {
@@ -162,7 +168,7 @@ export function NotesView({
       );
       if (patch.pinned !== undefined) void load();
     },
-    [openUid, load],
+    [load],
   );
 
   const remove = async () => {
@@ -203,22 +209,22 @@ export function NotesView({
           : "flex h-full min-h-0 w-72 shrink-0 flex-col border-r border-border"
       }
     >
-      <div className="flex shrink-0 flex-col gap-1.5 border-b border-border p-1.5">
-        <div className="flex items-center gap-1.5">
-          <PanelSearch
-            value={query}
-            onChange={setQuery}
-            placeholder={t("search.placeholder")}
-            fill
-          />
-          {canCreate && <AddButton label={t("new")} compact onClick={create} />}
-        </div>
+      <ToolbarBand className="flex-nowrap">
+        <PanelSearch
+          value={query}
+          onChange={setQuery}
+          placeholder={t("search.placeholder")}
+          fill
+        />
+        {canCreate && <AddButton label={t("new")} compact onClick={create} />}
+      </ToolbarBand>
+      <ToolbarBand>
         <Segmented
           value={view}
           onChange={(next) => setView(next as View)}
           options={options}
         />
-      </div>
+      </ToolbarBand>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {items === null ? (
           <LoadingState compact />
@@ -275,7 +281,7 @@ export function NotesView({
       key={note.uid}
       note={note}
       compact={compact}
-      onSave={save}
+      onSave={(patch) => save(note.uid, patch)}
       onDelete={() => void remove()}
       onBack={compact ? () => setOpenUid(null) : undefined}
       onSend={onSend}

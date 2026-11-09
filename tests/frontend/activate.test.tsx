@@ -118,6 +118,30 @@ describe(`${manifest.id} activate`, () => {
     expect(screen.getByText("nginx -s reload")).toBeTruthy();
   });
 
+  it("saves edits to the note being closed when another is picked", async () => {
+    const second = { ...summary, uid: "n2", title: "Second" };
+    const mock = api([summary, second]);
+    const get = mock.get.getMockImplementation()!;
+    mock.get.mockImplementation(async (path: string) =>
+      path === "/notes/n2" ? { data: { ...second, body: "two" } } : get(path),
+    );
+    rendered = await renderWithApp(plugin, {
+      manifest,
+      locales,
+      api: mock as never,
+    });
+    rendered.renderTab("notes", { isVisible: true, host });
+    fireEvent.click(await screen.findByText("Nginx tips"));
+    const title = await screen.findByDisplayValue("Nginx tips");
+    fireEvent.change(title, { target: { value: "Renamed" } });
+    fireEvent.click(screen.getByText("Second"));
+    await screen.findByDisplayValue("Second");
+    await waitFor(() =>
+      expect(mock.put).toHaveBeenCalledWith("/notes/n1", { title: "Renamed" }),
+    );
+    expect(mock.put).not.toHaveBeenCalledWith("/notes/n2", expect.anything());
+  });
+
   it("makes a new note in the current scope", async () => {
     const mock = api([]);
     rendered = await renderWithApp(plugin, {
@@ -150,5 +174,27 @@ describe(`${manifest.id} activate`, () => {
         params: expect.objectContaining({ scope: "global" }),
       }),
     );
+  });
+});
+
+describe("pinned card", () => {
+  it("shows pinned global notes", async () => {
+    rendered = await renderWithApp(plugin, {
+      manifest,
+      locales,
+      permissions: ["notes.use"],
+      api: {
+        get: vi.fn(async () => ({
+          data: [
+            { uid: "a", title: "Wifi codes", excerpt: "abc", pinned: true },
+            { uid: "b", title: "Scratch", excerpt: "x", pinned: false },
+          ],
+        })),
+      } as never,
+    });
+    expect(rendered.registered.dashboardCards()).toEqual(["notes-pinned"]);
+    rendered.renderDashboardCard("notes-pinned");
+    expect(await screen.findByText("Wifi codes")).toBeTruthy();
+    expect(screen.queryByText("Scratch")).toBeNull();
   });
 });
