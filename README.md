@@ -6,6 +6,12 @@
 
 <p>Write markdown notes for each host, folder or yourself, with commands you can copy or send to the terminal</p>
 
+<!-- VIDEO:START -->
+
+<a href="https://www.youtube.com/watch?v=pfTDZqNbeBw"><img src="https://img.shields.io/badge/Watch_the_demo-f59145?style=for-the-badge&logo=youtube&logoColor=white" alt="Watch the demo on YouTube" /></a>
+
+<!-- VIDEO:END -->
+
 </div>
 
 <br />
