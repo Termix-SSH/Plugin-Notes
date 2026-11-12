@@ -1,0 +1,98 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Termix-SSH/Termix/main/scripts/authz/authz.schema.json",
+  "seed": [
+    {
+      "as": "owner",
+      "method": "POST",
+      "path": "/plugin-api/notes/notes",
+      "body": {
+        "scope": "host",
+        "hostId": "{{host}}",
+        "title": "authz-own-note",
+        "body": "x",
+        "tags": []
+      },
+      "capture": {
+        "notes.notes": "uid"
+      }
+    }
+  ],
+  "routes": {
+    "GET /plugin-api/notes/folders": {
+      "access": "user",
+      "permission": "notes.use"
+    },
+    "GET /plugin-api/notes/notes": {
+      "access": "user",
+      "permission": "notes.use",
+      "resource": {
+        "kind": "host",
+        "min": "connect",
+        "key": "hostId"
+      },
+      "query": {
+        "scope": "host",
+        "hostId": "{{host}}"
+      }
+    },
+    "POST /plugin-api/notes/notes": {
+      "access": "user",
+      "permission": "notes.use",
+      "resource": {
+        "kind": "host",
+        "min": "connect",
+        "key": "hostId"
+      },
+      "body": {
+        "scope": "host",
+        "title": "authz-x",
+        "body": "x",
+        "tags": []
+      }
+    },
+    "DELETE /plugin-api/notes/notes/:uid": {
+      "access": "user",
+      "permission": "notes.use",
+      "resource": {
+        "kind": "host",
+        "min": "edit",
+        "fixture": "notes.notes"
+      },
+      "params": {
+        "uid": "notes.notes"
+      },
+      "destructive": true,
+      "note": "Host notes follow the host: anyone who can see the host reads them, edit access changes them"
+    },
+    "GET /plugin-api/notes/notes/:uid": {
+      "access": "user",
+      "permission": "notes.use",
+      "resource": {
+        "kind": "host",
+        "min": "connect",
+        "fixture": "notes.notes"
+      },
+      "params": {
+        "uid": "notes.notes"
+      },
+      "note": "Host notes follow the host: anyone who can see the host reads them, edit access changes them"
+    },
+    "PUT /plugin-api/notes/notes/:uid": {
+      "access": "user",
+      "permission": "notes.use",
+      "resource": {
+        "kind": "host",
+        "min": "edit",
+        "fixture": "notes.notes"
+      },
+      "params": {
+        "uid": "notes.notes"
+      },
+      "note": "Host notes follow the host: anyone who can see the host reads them, edit access changes them"
+    },
+    "GET /plugin-api/notes/search": {
+      "access": "user",
+      "permission": "notes.use"
+    }
+  }
+}
