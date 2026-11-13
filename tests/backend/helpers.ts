@@ -48,6 +48,7 @@ export async function startServer(hosts: FakeHost[]): Promise<TestServer> {
     );
   }
   const mock = createMockCtx({
+    sandbox: true,
     pluginId: manifest.id,
     manifest,
     capabilities: manifest.capabilities,
